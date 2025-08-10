@@ -3,12 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-  <title>IDEA • Envie sua sugestão</title>
+  <title>Envie sua sugestão</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    /* Seu CSS original aqui */
     :root {
       --primary: #2563eb;
       --primary-light: #3b82f6;
@@ -68,13 +67,16 @@
       width: 48px;
       height: 48px;
       border-radius: 10px;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-weight: bold;
-      font-size: 20px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: none;
+      display: block;
+    }
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
     }
     .header-text h1 {
       font-size: 18px;
@@ -332,7 +334,9 @@
   <div class="container">
     <div class="form-card">
       <div class="header">
-        <div class="logo">IDEA</div>
+        <div class="logo">
+          <img src="/img/logo.webp" alt="Logo" />
+        </div>
         <div class="header-text">
           <h1>Envie sua sugestão</h1>
           <p>Rápido, prático e anônimo — sua ideia vira ação.</p>
@@ -422,7 +426,7 @@
 
   <audio
     id="submitSound"
-    src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
+    src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
     preload="auto"
   ></audio>
 
@@ -446,166 +450,65 @@
         charCount.textContent = ideaTextarea.value.length;
       });
 
-      // Toggle campos anônimos
-      anonymousCheckbox.addEventListener('change', () => {
-        if (anonymousCheckbox.checked) {
-          nameInput.value = '';
-          areaSelect.selectedIndex = 0;
-          contactInput.value = '';
-          nameInput.disabled = true;
-          areaSelect.disabled = true;
-          contactInput.disabled = true;
-        } else {
-          nameInput.disabled = false;
-          areaSelect.disabled = false;
-          contactInput.disabled = false;
-        }
-      });
-
-      // Função pra validar formulário
-      function validateForm() {
+      // Validação simples
+      function validate() {
         let valid = true;
-
-        // Limpar erros
-        document.querySelectorAll('.error-message').forEach(e => (e.style.display = 'none'));
-
-        if (!anonymousCheckbox.checked) {
-          if (!nameInput.value.trim()) {
-            showError('nameError', 'Por favor, informe seu nome ou envie anonimamente.');
-            valid = false;
-          }
-          if (!areaSelect.value) {
-            showError('areaError', 'Por favor, selecione sua área.');
-            valid = false;
-          }
-          // Se contato informado, valida e-mail ou telefone (simples)
-          if (contactInput.value.trim()) {
-            const val = contactInput.value.trim();
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const phoneRegex = /^\+?[0-9\s()-]{7,}$/;
-            if (!emailRegex.test(val) && !phoneRegex.test(val)) {
-              showError('contactError', 'Informe um e-mail ou telefone válido, ou deixe vazio.');
-              valid = false;
-            }
-          }
-        }
+        // Limpa erros
+        document.querySelectorAll('.error-message').forEach(e => e.style.display = 'none');
 
         if (!ideaTextarea.value.trim()) {
-          showError('ideaError', 'Por favor, descreva sua ideia ou sugestão.');
-          valid = false;
-        } else if (ideaTextarea.value.trim().length > 500) {
-          showError('ideaError', 'Sua ideia não pode passar de 500 caracteres.');
+          document.getElementById('ideaError').textContent = 'Por favor, descreva sua ideia.';
+          document.getElementById('ideaError').style.display = 'block';
           valid = false;
         }
-
+        if (!areaSelect.value) {
+          document.getElementById('areaError').textContent = 'Selecione uma área.';
+          document.getElementById('areaError').style.display = 'block';
+          valid = false;
+        }
+        if (!anonymousCheckbox.checked && !nameInput.value.trim()) {
+          document.getElementById('nameError').textContent = 'Por favor, informe seu nome ou envie anonimamente.';
+          document.getElementById('nameError').style.display = 'block';
+          valid = false;
+        }
         return valid;
-      }
-
-      function showError(id, msg) {
-        const el = document.getElementById(id);
-        el.textContent = msg;
-        el.style.display = 'block';
-        el.parentElement.querySelector('.form-control').focus();
-        el.parentElement.querySelector('.form-control').classList.add('shake');
-        setTimeout(() => {
-          el.parentElement.querySelector('.form-control').classList.remove('shake');
-        }, 400);
-      }
-
-      // Gerar código REF aleatório
-      function generateRefCode() {
-        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        let ref = '';
-        for (let i = 0; i < 6; i++) {
-          ref += chars.charAt(Math.floor(Math.random() * chars.length));
-        }
-        return ref;
       }
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-
-        if (!validateForm()) return;
+        if (!validate()) return;
 
         submitBtn.disabled = true;
-        submitBtn.textContent = 'Enviando...';
 
-        submitSound.play().catch(() => {});
+        // Preparar dados
+        const data = {
+          name: anonymousCheckbox.checked ? 'Anônimo' : nameInput.value.trim(),
+          area: areaSelect.value,
+          contact: contactInput.value.trim() || 'Não informado',
+          idea: ideaTextarea.value.trim()
+        };
 
-        const ref = generateRefCode();
-        refCode.textContent = `REF: #${ref}`;
-
-        if (anonymousCheckbox.checked) {
-          // Anônimo: não envia e-mail, só feedback
-          setTimeout(() => {
+        // Envio via EmailJS (exemplo)
+        emailjs.send('service_id', 'template_id', data)
+          .then(() => {
+            submitSound.play();
+            // Gerar código de referência simples (aleatório)
+            const code = 'IDEA-' + Math.floor(Math.random() * 9000 + 1000);
+            refCode.textContent = 'REF: #' + code;
             successOverlay.classList.add('active');
             form.reset();
-            anonymousCheckbox.checked = true;
-            nameInput.disabled = true;
-            areaSelect.disabled = true;
-            contactInput.disabled = true;
             charCount.textContent = '0';
+          })
+          .catch(() => {
+            alert('Erro ao enviar a sugestão. Tente novamente.');
+          })
+          .finally(() => {
             submitBtn.disabled = false;
-            submitBtn.textContent = 'Enviar sugestão';
-          }, 1000);
-        } else {
-          // Não anônimo: enviar e-mail com EmailJS
-          const emailToSend = contactInput.value.trim();
-
-          // Se contato não é email válido, não envia email mas mostra sucesso (pra evitar erro)
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(emailToSend)) {
-            // Só feedback
-            setTimeout(() => {
-              successOverlay.classList.add('active');
-              form.reset();
-              anonymousCheckbox.checked = false;
-              nameInput.disabled = false;
-              areaSelect.disabled = false;
-              contactInput.disabled = false;
-              charCount.textContent = '0';
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Enviar sugestão';
-            }, 1000);
-            return;
-          }
-
-          const templateParams = {
-            user_name: nameInput.value.trim(),
-            user_email: emailToSend,
-            area: areaSelect.value,
-            message: ideaTextarea.value.trim(),
-            ref_code: ref
-          };
-
-          emailjs.send('service_8enbom1', 'template_tly48rs', templateParams)
-            .then(() => {
-              successOverlay.classList.add('active');
-              form.reset();
-              anonymousCheckbox.checked = false;
-              nameInput.disabled = false;
-              areaSelect.disabled = false;
-              contactInput.disabled = false;
-              charCount.textContent = '0';
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Enviar sugestão';
-            })
-            .catch((error) => {
-              alert('Erro ao enviar e-mail de confirmação: ' + JSON.stringify(error));
-              submitBtn.disabled = false;
-              submitBtn.textContent = 'Enviar sugestão';
-            });
-        }
+          });
       });
 
       closeBtn.addEventListener('click', () => {
         successOverlay.classList.remove('active');
-      });
-
-      successOverlay.addEventListener('click', (e) => {
-        if (e.target === successOverlay) {
-          successOverlay.classList.remove('active');
-        }
       });
     });
   </script>
