@@ -62,21 +62,26 @@
       align-items: center;
       gap: 16px;
       margin-bottom: 24px;
+      justify-content: center;
+      text-align: center;
     }
     .logo {
       width: 48px;
       height: 48px;
       border-radius: 10px;
-      overflow: hidden;
-      flex-shrink: 0;
-      background: none;
-      display: block;
+      background: transparent;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .logo img {
-      width: 100%;
-      height: 100%;
+      width: 40px;
+      height: 40px;
       object-fit: contain;
-      display: block;
+      border-radius: 8px;
+    }
+    .header-text {
+      text-align: center;
     }
     .header-text h1 {
       font-size: 18px;
@@ -315,7 +320,7 @@
       .form-card {padding: 20px;}
       .header {
         flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
         gap: 12px;
       }
     }
@@ -426,7 +431,7 @@
 
   <audio
     id="submitSound"
-    src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
+    src="data:audio/mpeg;base64,SUQzBAAAAAABEVRYWFgAAAAtAAADY29tbWVudABCaWdTb3VuZEJhbmsuY29tIC8gTGFTb25vdGhlcXVlLm9yZwBURU5DAAAAHQAAA1N3aXRjaCBQbHVzIMKpIE5DSCBTb2Z0d2FyZQBUSVQyAAAABgAAAzIyMzUAVFNTRQAAAA8AAANMYXZmNTcuODMuMTAwAAAAAAAAAAAAAAD/80DEAAAAA0gAAAAATEFNRTMuMTAwVVVVVVVVVVVVVUxBTUUzLjEwMFVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQsRbAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVf/zQMSkAAADSAAAAABVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVV"
     preload="auto"
   ></audio>
 
@@ -445,7 +450,9 @@
       const refCode = document.getElementById('refCode');
       const submitSound = document.getElementById('submitSound');
 
-      // Contador de caracteres
+      let formData = {};
+
+      // Atualiza contador de caracteres
       ideaTextarea.addEventListener('input', () => {
         charCount.textContent = ideaTextarea.value.length;
       });
@@ -453,57 +460,70 @@
       // Validação simples
       function validate() {
         let valid = true;
-        // Limpa erros
-        document.querySelectorAll('.error-message').forEach(e => e.style.display = 'none');
 
-        if (!ideaTextarea.value.trim()) {
-          document.getElementById('ideaError').textContent = 'Por favor, descreva sua ideia.';
-          document.getElementById('ideaError').style.display = 'block';
-          valid = false;
-        }
-        if (!areaSelect.value) {
-          document.getElementById('areaError').textContent = 'Selecione uma área.';
-          document.getElementById('areaError').style.display = 'block';
-          valid = false;
-        }
-        if (!anonymousCheckbox.checked && !nameInput.value.trim()) {
-          document.getElementById('nameError').textContent = 'Por favor, informe seu nome ou envie anonimamente.';
+        // Reset erros
+        document.querySelectorAll('.error-message').forEach(e => (e.style.display = 'none'));
+
+        if (!anonymousCheckbox.checked && nameInput.value.trim() === '') {
+          document.getElementById('nameError').textContent = 'Por favor, insira seu nome ou envie anonimamente.';
           document.getElementById('nameError').style.display = 'block';
           valid = false;
         }
+
+        if (!areaSelect.value) {
+          document.getElementById('areaError').textContent = 'Selecione sua área.';
+          document.getElementById('areaError').style.display = 'block';
+          valid = false;
+        }
+
+        if (ideaTextarea.value.trim() === '') {
+          document.getElementById('ideaError').textContent = 'Descreva sua ideia ou sugestão.';
+          document.getElementById('ideaError').style.display = 'block';
+          valid = false;
+        }
+
         return valid;
       }
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
-        if (!validate()) return;
+
+        if (!validate()) {
+          return;
+        }
 
         submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
 
-        // Preparar dados
-        const data = {
+        formData = {
           name: anonymousCheckbox.checked ? 'Anônimo' : nameInput.value.trim(),
           area: areaSelect.value,
-          contact: contactInput.value.trim() || 'Não informado',
-          idea: ideaTextarea.value.trim()
+          contact: contactInput.value.trim(),
+          idea: ideaTextarea.value.trim(),
+          anonymous: anonymousCheckbox.checked
         };
 
-        // Envio via EmailJS (exemplo)
-        emailjs.send('service_id', 'template_id', data)
+        // Envia email via EmailJS
+        emailjs.send('service_idea', 'template_idea', formData)
           .then(() => {
             submitSound.play();
-            // Gerar código de referência simples (aleatório)
-            const code = 'IDEA-' + Math.floor(Math.random() * 9000 + 1000);
-            refCode.textContent = 'REF: #' + code;
+            // Mostrar sucesso
             successOverlay.classList.add('active');
+
+            // Gerar código aleatório
+            const code = 'IDEA-' + Math.floor(1000 + Math.random() * 9000);
+            refCode.textContent = 'REF: #' + code;
+
+            // Reset form
             form.reset();
             charCount.textContent = '0';
-          })
-          .catch(() => {
-            alert('Erro ao enviar a sugestão. Tente novamente.');
-          })
-          .finally(() => {
             submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar sugestão';
+          })
+          .catch((error) => {
+            alert('Erro ao enviar. Tente novamente.');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar sugestão';
           });
       });
 
