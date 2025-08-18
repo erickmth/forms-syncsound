@@ -8,7 +8,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
   <style>
-    /* Seu CSS original aqui */
     :root {
       --primary: #2563eb;
       --primary-light: #3b82f6;
@@ -361,9 +360,9 @@
         </div>
 
         <div class="form-group">
-          <label for="contact" class="form-label">Contato (opcional)</label>
-          <input type="text" id="contact" class="form-control" placeholder="E-mail ou telefone" />
-          <div class="error-message" id="contactError"></div>
+          <label for="email" class="form-label">E-mail (opcional)</label>
+          <input type="email" id="email" class="form-control" placeholder="Digite seu e-mail" />
+          <div class="error-message" id="emailError"></div>
         </div>
 
         <div class="form-group">
@@ -431,7 +430,7 @@
       const form = document.getElementById('ideaForm');
       const nameInput = document.getElementById('name');
       const areaSelect = document.getElementById('area');
-      const contactInput = document.getElementById('contact');
+      const emailInput = document.getElementById('email');
       const ideaTextarea = document.getElementById('idea');
       const anonymousCheckbox = document.getElementById('anonymous');
       const submitBtn = document.getElementById('submitBtn');
@@ -451,14 +450,14 @@
         if (anonymousCheckbox.checked) {
           nameInput.value = '';
           areaSelect.selectedIndex = 0;
-          contactInput.value = '';
+          emailInput.value = '';
           nameInput.disabled = true;
           areaSelect.disabled = true;
-          contactInput.disabled = true;
+          emailInput.disabled = true;
         } else {
           nameInput.disabled = false;
           areaSelect.disabled = false;
-          contactInput.disabled = false;
+          emailInput.disabled = false;
         }
       });
 
@@ -478,13 +477,11 @@
             showError('areaError', 'Por favor, selecione sua área.');
             valid = false;
           }
-          // Se contato informado, valida e-mail ou telefone (simples)
-          if (contactInput.value.trim()) {
-            const val = contactInput.value.trim();
+          // Se email informado, valida formato
+          if (emailInput.value.trim()) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            const phoneRegex = /^\+?[0-9\s()-]{7,}$/;
-            if (!emailRegex.test(val) && !phoneRegex.test(val)) {
-              showError('contactError', 'Informe um e-mail ou telefone válido, ou deixe vazio.');
+            if (!emailRegex.test(emailInput.value.trim())) {
+              showError('emailError', 'Por favor, informe um e-mail válido ou deixe vazio.');
               valid = false;
             }
           }
@@ -543,26 +540,25 @@
             anonymousCheckbox.checked = true;
             nameInput.disabled = true;
             areaSelect.disabled = true;
-            contactInput.disabled = true;
+            emailInput.disabled = true;
             charCount.textContent = '0';
             submitBtn.disabled = false;
             submitBtn.textContent = 'Enviar sugestão';
           }, 1000);
         } else {
           // Não anônimo: enviar e-mail com EmailJS
-          const emailToSend = contactInput.value.trim();
+          const userEmail = emailInput.value.trim();
+          const adminEmail = "erickmth4565@gmail.com";
 
-          // Se contato não é email válido, não envia email mas mostra sucesso (pra evitar erro)
-          const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-          if (!emailRegex.test(emailToSend)) {
-            // Só feedback
+          // Se não informou email, só mostra sucesso
+          if (!userEmail) {
             setTimeout(() => {
               successOverlay.classList.add('active');
               form.reset();
               anonymousCheckbox.checked = false;
               nameInput.disabled = false;
               areaSelect.disabled = false;
-              contactInput.disabled = false;
+              emailInput.disabled = false;
               charCount.textContent = '0';
               submitBtn.disabled = false;
               submitBtn.textContent = 'Enviar sugestão';
@@ -570,28 +566,44 @@
             return;
           }
 
-          const templateParams = {
+          // Envia email para o usuário
+          const userTemplateParams = {
             user_name: nameInput.value.trim(),
-            user_email: emailToSend,
+            user_email: userEmail,
             area: areaSelect.value,
             message: ideaTextarea.value.trim(),
             ref_code: ref
           };
 
-          emailjs.send('service_8enbom1', 'template_tly48rs', templateParams)
+          // Envia email para o admin (mesmo conteúdo)
+          const adminTemplateParams = {
+            user_name: nameInput.value.trim(),
+            user_email: userEmail,
+            area: areaSelect.value,
+            message: ideaTextarea.value.trim(),
+            ref_code: ref,
+            to_email: adminEmail
+          };
+
+          // Primeiro envia para o usuário
+          emailjs.send('service_8enbom1', 'template_tly48rs', userTemplateParams)
+            .then(() => {
+              // Depois envia para o admin
+              return emailjs.send('service_8enbom1', 'template_tly48rs', adminTemplateParams);
+            })
             .then(() => {
               successOverlay.classList.add('active');
               form.reset();
               anonymousCheckbox.checked = false;
               nameInput.disabled = false;
               areaSelect.disabled = false;
-              contactInput.disabled = false;
+              emailInput.disabled = false;
               charCount.textContent = '0';
               submitBtn.disabled = false;
               submitBtn.textContent = 'Enviar sugestão';
             })
             .catch((error) => {
-              alert('Erro ao enviar e-mail de confirmação: ' + JSON.stringify(error));
+              alert('Erro ao enviar e-mail: ' + JSON.stringify(error));
               submitBtn.disabled = false;
               submitBtn.textContent = 'Enviar sugestão';
             });
